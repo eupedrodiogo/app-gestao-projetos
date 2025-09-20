@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Projetos</title>
+  
+  <!-- React e ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  
+  <!-- Babel para transformar JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- API Service -->
+  <script src="api-config.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .nav-link {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-link.active {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+
+    .content {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      min-height: 500px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid #667eea;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .project-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid #667eea;
+      transition: all 0.3s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .mindmap-container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      min-height: 400px;
+      border: 2px dashed #e9ecef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-bar {
+      background: #e9ecef;
+      border-radius: 10px;
+      height: 8px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress-fill {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    .task-item {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid #667eea;
+    }
+
+    .flex {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .status-completed { 
+      opacity: 0.7; 
+      text-decoration: line-through; 
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 10px; }
+      .nav-links { flex-direction: column; }
+      .grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .text-center { text-align: center; }
+    .text-muted { color: #6c757d; }
+    .mb-4 { margin-bottom: 1.5rem; }
+    .mt-4 { margin-top: 1.5rem; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function App() {
+      const [currentView, setCurrentView] = useState('dashboard');
+      const [projects, setProjects] = useState([]);
+      const [tasks, setTasks] = useState([]);
+      const [mindMaps, setMindMaps] = useState([]);
+      const [apiAvailable, setApiAvailable] = useState(false);
+      const [loading, setLoading] = useState(true);
+
+      // Verificar disponibilidade da API e carregar dados
+      useEffect(() => {
+        const initializeApp = async () => {
+          setLoading(true);
+          
+          // Verificar se a API está disponível
+          const isApiAvailable = await checkApiAvailability();
+          setApiAvailable(isApiAvailable);
+
+          if (isApiAvailable) {
+            // Carregar dados da API
+            try {
+              const [projectsData, tasksData, mindMapsData] = await Promise.all([
+                apiService.getProjects(),
+                apiService.getTasks(),
+                apiService.getMindmaps()
+              ]);
+              
+              setProjects(projectsData || []);
+              setTasks(tasksData || []);
+              setMindMaps(mindMapsData || []);
+            } catch (error) {
+              console.error('Erro ao carregar dados da API:', error);
+              // Fallback para localStorage
+              loadFromLocalStorage();
+            }
+          } else {
+            // Usar localStorage como fallback
+            loadFromLocalStorage();
+          }
+          
+          setLoading(false);
+        };
+
+        const loadFromLocalStorage = () => {
+          const savedProjects = localStorage.getItem('projects');
+          const savedTasks = localStorage.getItem('tasks');
+          const savedMindMaps = localStorage.getItem('mindMaps');
+
+          if (savedProjects) setProjects(JSON.parse(savedProjects));
+          if (savedTasks) setTasks(JSON.parse(savedTasks));
+          if (savedMindMaps) setMindMaps(JSON.parse(savedMindMaps));
+        };
+
+        initializeApp();
+      }, []);
+
+      // Salvar dados (API ou localStorage)
+      useEffect(() => {
+        if (!loading && !apiAvailable) {
+          localStorage.setItem('projects', JSON.stringify(projects));
+        }
+      }, [projects, loading, apiAvailable]);
+
+      useEffect(() => {
+        if (!loading && !apiAvailable) {
+          localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+      }, [tasks, loading, apiAvailable]);
+
+      useEffect(() => {
+        if (!loading && !apiAvailable) {
+          localStorage.setItem('mindMaps', JSON.stringify(mindMaps));
+        }
+      }, [mindMaps, loading, apiAvailable]);
+
+      const renderContent = () => {
+        if (loading) {
+          return (
+            <div style={{ textAlign: 'center', padding: '40px' }}>
+              <div style={{ fontSize: '24px', marginBottom: '20px' }}>⏳</div>
+              <h3>Carregando aplicação...</h3>
+              <p>Verificando conectividade com o banco de dados...</p>
+            </div>
+          );
+        }
+
+        switch (currentView) {
+          case 'dashboard':
+            return <Dashboard projects={projects} tasks={tasks} mindMaps={mindMaps} />;
+          case 'projects':
+            return <Projects 
+              projects={projects} 
+              setProjects={setProjects} 
+              tasks={tasks} 
+              apiAvailable={apiAvailable} 
+            />;
+          case 'tasks':
+            return <Tasks 
+              tasks={tasks} 
+              setTasks={setTasks} 
+              projects={projects} 
+              apiAvailable={apiAvailable} 
+            />;
+          case 'mindmaps':
+            return <MindMaps 
+              mindMaps={mindMaps} 
+              setMindMaps={setMindMaps} 
+              projects={projects} 
+              apiAvailable={apiAvailable} 
+            />;
+          default:
+            return <Dashboard projects={projects} tasks={tasks} mindMaps={mindMaps} />;
+        }
+      };
+
+      return (
+        <div className="container">
+          <Navigation currentView={currentView} setCurrentView={setCurrentView} />
+          
+          {/* Status da API */}
+          <div style={{ 
+            background: apiAvailable ? 'rgba(40, 167, 69, 0.1)' : 'rgba(255, 193, 7, 0.1)', 
+            border: `1px solid ${apiAvailable ? '#28a745' : '#ffc107'}`,
+            borderRadius: '8px',
+            padding: '10px 15px',
+            marginBottom: '20px',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span>{apiAvailable ? '🟢' : '🟡'}</span>
+            <span>
+              {apiAvailable 
+                ? 'Conectado ao banco de dados - Dados salvos automaticamente' 
+                : 'Modo offline - Dados salvos localmente no navegador'
+              }
+            </span>
+          </div>
+
+          <div className="content">
+            {renderContent()}
+          </div>
+        </div>
+      );
+    }
+
+    function Navigation({ currentView, setCurrentView }) {
+      const navItems = [
+        { key: 'dashboard', icon: '📊', label: 'Dashboard' },
+        { key: 'projects', icon: '📁', label: 'Projetos' },
+        { key: 'tasks', icon: '✅', label: 'Etapas' },
+        { key: 'mindmaps', icon: '🧠', label: 'Mapas Mentais' }
+      ];
+
+      return (
+        <nav className="nav">
+          <h1 style={{ fontSize: '1.8rem', fontWeight: 'bold', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Gestão de Projetos
+          </h1>
+          <div className="nav-links">
+            {navItems.map(item => (
+              <button 
+                key={item.key} 
+                onClick={() => setCurrentView(item.key)}
+                className={`nav-link ${currentView === item.key ? 'active' : ''}`}
+                style={{ border: 'none', cursor: 'pointer' }}
+              >
+                <span>{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </nav>
+      );
+    }
+
+    function Dashboard({ projects, tasks, mindMaps }) {
+      const totalProjects = projects.length;
+      const completedProjects = projects.filter(p => p.status === 'concluido').length;
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter(task => task.status === 'completed').length;
+      const totalMindMaps = mindMaps.length;
+      const activeProjects = projects.filter(project => project.status === 'active').length;
+
+      const stats = [
+        { title: 'Projetos Ativos', value: activeProjects, total: totalProjects, color: '#667eea' },
+        { title: 'Projetos Concluídos', value: completedProjects, total: totalProjects, color: '#28a745' },
+        { title: 'Etapas Concluídas', value: completedTasks, total: totalTasks, color: '#17a2b8' },
+        { title: 'Mapas Mentais', value: totalMindMaps, total: totalMindMaps, color: '#6f42c1' }
+      ];
+
+      const recentProjects = projects.slice(-3);
+      const recentTasks = tasks.slice(-5);
+
+      return (
+        <div>
+          <h1 className="mb-4" style={{ fontSize: '2rem', fontWeight: 'bold' }}>📊 Dashboard - Visão Geral</h1>
+          
+          <div className="stats-grid">
+            {stats.map((stat, index) => (
+              <div key={index} className="stat-card">
+                <div className="stat-number" style={{ color: stat.color }}>
+                  {stat.value}
+                </div>
+                <div className="text-muted">{stat.title}</div>
+                {stat.total > 0 && (
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{ width: `${(stat.value / stat.total) * 100}%` }}
+                    ></div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="grid">
+            <div className="card">
+              <h3 className="mb-4">📁 Projetos Recentes</h3>
+              {recentProjects.length > 0 ? (
+                <div>
+                  {recentProjects.map(project => (
+                    <div key={project.id} style={{ marginBottom: '10px', padding: '10px', background: '#f8f9fa', borderRadius: '8px' }}>
+                      <strong>{project.name}</strong>
+                      <div style={{ fontSize: '12px', color: '#666' }}>{project.description}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-muted">
+                  <p>Nenhum projeto encontrado</p>
+                </div>
+              )}
+            </div>
+
+            <div className="card">
+              <h3 className="mb-4">✅ Etapas Recentes</h3>
+              {recentTasks.length > 0 ? (
+                <div>
+                  {recentTasks.map(task => (
+                    <div key={task.id} style={{ marginBottom: '8px', fontSize: '14px' }}>
+                      <span style={{ marginRight: '8px' }}>
+                        {task.status === 'completed' ? '✅' : '⏳'}
+                      </span>
+                      <span className={task.status === 'completed' ? 'status-completed' : ''}>
+                        {task.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-muted">
+                  <p>Nenhuma etapa encontrada</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function Projects({ projects, setProjects, tasks }) {
+      const [showModal, setShowModal] = useState(false);
+      const [editingProject, setEditingProject] = useState(null);
+      const [formData, setFormData] = useState({
+        name: '',
+        description: '',
+        status: 'planejamento',
+        priority: 'media',
+        startDate: '',
+        endDate: ''
+      });
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        if (editingProject) {
+          setProjects(projects.map(p => 
+            p.id === editingProject.id
+              ? { ...formData, id: editingProject.id }
+              : p
+          ));
+        } else {
+          const newProject = {
+            ...formData,
+            id: Date.now(),
+            createdAt: new Date().toISOString()
+          };
+          setProjects([...projects, newProject]);
+        }
+        
+        resetForm();
+      };
+
+      const resetForm = () => {
+        setFormData({
+          name: '',
+          description: '',
+          status: 'planejamento',
+          priority: 'media',
+          startDate: '',
+          endDate: ''
+        });
+        setShowModal(false);
+        setEditingProject(null);
+      };
+
+      const handleEdit = (project) => {
+        setFormData(project);
+        setEditingProject(project);
+        setShowModal(true);
+      };
+
+      const handleDelete = (id) => {
+        if (confirm('Tem certeza que deseja excluir este projeto?')) {
+          setProjects(projects.filter(p => p.id !== id));
+        }
+      };
+
+      const getProjectProgress = (projectId) => {
+        const projectTasks = tasks.filter(task => task.projectId === projectId);
+        if (projectTasks.length === 0) return 0;
+        const completedTasks = projectTasks.filter(task => task.status === 'completed').length;
+        return Math.round((completedTasks / projectTasks.length) * 100);
+      };
+
+      return (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h1>📁 Projetos</h1>
+            <button className="btn" onClick={() => setShowModal(true)}>
+              ➕ Novo Projeto
+            </button>
+          </div>
+
+          <div className="projects-grid">
+            {projects.map(project => (
+              <div key={project.id} className="project-card">
+                <h3 style={{ marginBottom: '10px' }}>{project.name}</h3>
+                <p style={{ color: '#666', marginBottom: '15px' }}>{project.description}</p>
+                
+                <div style={{ marginBottom: '15px' }}>
+                  <span style={{ 
+                    background: project.status === 'concluido' ? '#28a745' : project.status === 'em-andamento' ? '#ffc107' : '#6c757d',
+                    color: 'white',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    textTransform: 'uppercase'
+                  }}>
+                    {project.status}
+                  </span>
+                </div>
+
+                <div style={{ marginBottom: '15px' }}>
+                  <div style={{ fontSize: '14px', marginBottom: '5px' }}>
+                    Progresso: {getProjectProgress(project.id)}%
+                  </div>
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{ width: `${getProjectProgress(project.id)}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button 
+                    className="btn btn-secondary"
+                    onClick={() => handleEdit(project)}
+                  >
+                    ✏️ Editar
+                  </button>
+                  <button 
+                    className="btn btn-danger"
+                    onClick={() => handleDelete(project.id)}
+                  >
+                    🗑️ Excluir
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {projects.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+              <h3>Nenhum projeto encontrado</h3>
+              <p>Comece criando seu primeiro projeto</p>
+            </div>
+          )}
+
+          {showModal && (
+            <div className="modal">
+              <div className="modal-content">
+                <h3>{editingProject ? 'Editar Projeto' : 'Novo Projeto'}</h3>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label className="form-label">Nome do Projeto</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Descrição</label>
+                    <textarea
+                      className="form-input"
+                      value={formData.description}
+                      onChange={(e) => setFormData({...formData, description: e.target.value})}
+                      rows="3"
+                    ></textarea>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Status</label>
+                    <select
+                      className="form-input"
+                      value={formData.status}
+                      onChange={(e) => setFormData({...formData, status: e.target.value})}
+                    >
+                      <option value="planejamento">Planejamento</option>
+                      <option value="em-andamento">Em Andamento</option>
+                      <option value="concluido">Concluído</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Prioridade</label>
+                    <select
+                      className="form-input"
+                      value={formData.priority}
+                      onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                    >
+                      <option value="alta">Alta</option>
+                      <option value="media">Média</option>
+                      <option value="baixa">Baixa</option>
+                    </select>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary"
+                      onClick={() => {
+                        resetForm();
+                        setEditingProject(null);
+                      }}
+                    >
+                      Cancelar
+                    </button>
+                    <button type="submit" className="btn">
+                      {editingProject ? 'Atualizar' : 'Criar'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function Tasks({ tasks, setTasks, projects }) {
+      const [showModal, setShowModal] = useState(false);
+      const [editingTask, setEditingTask] = useState(null);
+      const [filter, setFilter] = useState('all');
+      const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        status: 'pending',
+        priority: 'media',
+        projectId: '',
+        dueDate: ''
+      });
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        if (editingTask) {
+          setTasks(tasks.map(t => 
+            t.id === editingTask.id
+              ? { ...formData, id: editingTask.id }
+              : t
+          ));
+        } else {
+          const newTask = {
+            ...formData,
+            id: Date.now(),
+            createdAt: new Date().toISOString()
+          };
+          setTasks([...tasks, newTask]);
+        }
+        
+        resetForm();
+      };
+
+      const resetForm = () => {
+        setFormData({
+          title: '',
+          description: '',
+          status: 'pending',
+          priority: 'media',
+          projectId: '',
+          dueDate: ''
+        });
+        setShowModal(false);
+        setEditingTask(null);
+      };
+
+      const handleEdit = (task) => {
+        setFormData(task);
+        setEditingTask(task);
+        setShowModal(true);
+      };
+
+      const handleDelete = (id) => {
+        if (confirm('Tem certeza que deseja excluir esta etapa?')) {
+          setTasks(tasks.filter(t => t.id !== id));
+        }
+      };
+
+      const toggleTaskStatus = (id) => {
+        setTasks(tasks.map(task => 
+          task.id === id 
+            ? { ...task, status: task.status === 'completed' ? 'pending' : 'completed' }
+            : task
+        ));
+      };
+
+      const filteredTasks = tasks.filter(task => {
+        if (filter === 'all') return true;
+        if (filter === 'completed') return task.status === 'completed';
+        if (filter === 'pending') return task.status === 'pending';
+        return true;
+      });
+
+      const getProjectName = (projectId) => {
+        const project = projects.find(p => p.id === parseInt(projectId));
+        return project ? project.name : 'Sem projeto';
+      };
+
+      return (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h1>✅ Etapas</h1>
+            <button className="btn" onClick={() => setShowModal(true)}>
+              ➕ Nova Etapa
+            </button>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ marginRight: '10px' }}>Filtrar por:</label>
+            <select 
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+            >
+              <option value="all">Todas</option>
+              <option value="pending">Pendentes</option>
+              <option value="completed">Concluídas</option>
+            </select>
+          </div>
+
+          <div>
+            {filteredTasks.map(task => (
+              <div key={task.id} className="task-item">
+                <div className="flex">
+                  <button 
+                    onClick={() => toggleTaskStatus(task.id)}
+                    style={{ 
+                      background: task.status === 'completed' ? '#28a745' : '#6c757d',
+                      color: 'white',
+                      border: 'none',
+                      padding: '5px 10px',
+                      borderRadius: '4px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {task.status === 'completed' ? '✅' : '⏳'}
+                  </button>
+                  
+                  <button 
+                    className="btn btn-secondary"
+                    onClick={() => handleEdit(task)}
+                    style={{ padding: '5px 10px', fontSize: '12px' }}
+                  >
+                    ✏️
+                  </button>
+                  
+                  <button 
+                    className="btn btn-danger"
+                    onClick={() => handleDelete(task.id)}
+                    style={{ padding: '5px 10px', fontSize: '12px' }}
+                  >
+                    🗑️
+                  </button>
+                </div>
+                
+                <h4 className={task.status === 'completed' ? 'status-completed' : ''}>{task.title}</h4>
+                <p style={{ marginBottom: '10px', color: '#666' }}>{task.description}</p>
+                
+                <div style={{ display: 'flex', gap: '15px', fontSize: '12px', color: '#666' }}>
+                  <span>📁 {getProjectName(task.projectId)}</span>
+                  <span>📅 {task.dueDate || 'Sem prazo'}</span>
+                  <span>
+                    🔥 {task.priority === 'alta' ? 'Alta' : 
+                        task.priority === 'media' ? 'Média' : 'Baixa'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filteredTasks.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+              <h3>Nenhuma etapa encontrada</h3>
+              <p>Comece criando sua primeira etapa</p>
+            </div>
+          )}
+
+          {showModal && (
+            <div className="modal">
+              <div className="modal-content">
+                <h3>{editingTask ? 'Editar Etapa' : 'Nova Etapa'}</h3>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label className="form-label">Título</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={formData.title}
+                      onChange={(e) => setFormData({...formData, title: e.target.value})}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Descrição</label>
+                    <textarea
+                      className="form-input"
+                      value={formData.description}
+                      onChange={(e) => setFormData({...formData, description: e.target.value})}
+                      rows="3"
+                    ></textarea>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Projeto</label>
+                    <select
+                      className="form-input"
+                      value={formData.projectId}
+                      onChange={(e) => setFormData({...formData, projectId: e.target.value})}
+                    >
+                      <option value="">Selecione um projeto</option>
+                      {projects.map(project => (
+                        <option key={project.id} value={project.id}>
+                          {project.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Status</label>
+                    <select
+                      className="form-input"
+                      value={formData.status}
+                      onChange={(e) => setFormData({...formData, status: e.target.value})}
+                    >
+                      <option value="pending">Pendente</option>
+                      <option value="completed">Concluída</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Prioridade</label>
+                    <select
+                      className="form-input"
+                      value={formData.priority}
+                      onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                    >
+                      <option value="alta">Alta</option>
+                      <option value="media">Média</option>
+                      <option value="baixa">Baixa</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Data de Vencimento</label>
+                    <input
+                      type="date"
+                      className="form-input"
+                      value={formData.dueDate}
+                      onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary"
+                      onClick={() => {
+                        resetForm();
+                        setEditingTask(null);
+                      }}
+                    >
+                      Cancelar
+                    </button>
+                    <button type="submit" className="btn">
+                      {editingTask ? 'Atualizar' : 'Criar'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function MindMaps({ mindMaps, setMindMaps, projects }) {
+      const [showModal, setShowModal] = useState(false);
+      const [editingMindMap, setEditingMindMap] = useState(null);
+      const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        projectId: '',
+        content: ''
+      });
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        if (editingMindMap) {
+          setMindMaps(mindMaps.map(m => 
+            m.id === editingMindMap.id
+              ? { ...formData, id: editingMindMap.id }
+              : m
+          ));
+        } else {
+          const newMindMap = {
+            ...formData,
+            id: Date.now(),
+            createdAt: new Date().toISOString()
+          };
+          setMindMaps([...mindMaps, newMindMap]);
+        }
+        
+        resetForm();
+      };
+
+      const resetForm = () => {
+        setFormData({
+          title: '',
+          description: '',
+          projectId: '',
+          content: ''
+        });
+        setShowModal(false);
+        setEditingMindMap(null);
+      };
+
+      const handleEdit = (mindMap) => {
+        setFormData(mindMap);
+        setEditingMindMap(mindMap);
+        setShowModal(true);
+      };
+
+      const handleDelete = (id) => {
+        if (confirm('Tem certeza que deseja excluir este mapa mental?')) {
+          setMindMaps(mindMaps.filter(m => m.id !== id));
+        }
+      };
+
+      const getProjectName = (projectId) => {
+        const project = projects.find(p => p.id === parseInt(projectId));
+        return project ? project.name : 'Sem projeto';
+      };
+
+      return (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h1>🧠 Mapas Mentais</h1>
+            <button className="btn" onClick={() => setShowModal(true)}>
+              ➕ Novo Mapa Mental
+            </button>
+          </div>
+
+          <div className="grid">
+            {mindMaps.map(mindMap => (
+              <div key={mindMap.id} className="card">
+                <h3 style={{ marginBottom: '10px' }}>{mindMap.title}</h3>
+                <p style={{ color: '#666', marginBottom: '15px' }}>{mindMap.description}</p>
+                
+                <div style={{ marginBottom: '15px' }}>
+                  <strong>Projeto:</strong> {getProjectName(mindMap.projectId)}
+                </div>
+
+                <div className="mindmap-container" style={{ minHeight: '200px', marginBottom: '15px' }}>
+                  {mindMap.content ? (
+                    <div style={{ whiteSpace: 'pre-wrap', fontSize: '14px' }}>
+                      {mindMap.content}
+                    </div>
+                  ) : (
+                    <p style={{ color: '#999' }}>Clique em "Editar" para adicionar conteúdo ao mapa mental</p>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button 
+                    className="btn btn-secondary"
+                    onClick={() => handleEdit(mindMap)}
+                  >
+                    ✏️ Editar
+                  </button>
+                  <button 
+                    className="btn btn-danger"
+                    onClick={() => handleDelete(mindMap.id)}
+                  >
+                    🗑️ Excluir
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {mindMaps.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+              <h3>Nenhum mapa mental encontrado</h3>
+              <p>Comece criando seu primeiro mapa mental</p>
+            </div>
+          )}
+
+          {showModal && (
+            <div className="modal">
+              <div className="modal-content">
+                <h3>{editingMindMap ? 'Editar Mapa Mental' : 'Novo Mapa Mental'}</h3>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label className="form-label">Título</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={formData.title}
+                      onChange={(e) => setFormData({...formData, title: e.target.value})}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Descrição</label>
+                    <textarea
+                      className="form-input"
+                      value={formData.description}
+                      onChange={(e) => setFormData({...formData, description: e.target.value})}
+                      rows="3"
+                    ></textarea>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Projeto</label>
+                    <select
+                      className="form-input"
+                      value={formData.projectId}
+                      onChange={(e) => setFormData({...formData, projectId: e.target.value})}
+                    >
+                      <option value="">Selecione um projeto</option>
+                      {projects.map(project => (
+                        <option key={project.id} value={project.id}>
+                          {project.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Conteúdo do Mapa Mental</label>
+                    <textarea
+                      className="form-input"
+                      value={formData.content}
+                      onChange={(e) => setFormData({...formData, content: e.target.value})}
+                      rows="8"
+                      placeholder="Digite o conteúdo do seu mapa mental..."
+                    ></textarea>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary"
+                      onClick={() => {
+                        resetForm();
+                        setEditingMindMap(null);
+                      }}
+                    >
+                      Cancelar
+                    </button>
+                    <button type="submit" className="btn">
+                      {editingMindMap ? 'Atualizar' : 'Criar'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Renderizar a aplicação usando React 18
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
