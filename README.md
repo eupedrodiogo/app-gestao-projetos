@@ -1,57 +1,75 @@
-# Sistema de Gestão de Projetos
+# App de Gestão de Projetos
 
-Um sistema completo de gestão de projetos com interface web moderna e banco de dados SQLite.
+Uma aplicação completa para gestão de projetos desenvolvida com React no frontend e Node.js no backend, organizada em uma arquitetura modular.
 
-## 🚀 Características
+## 🚀 Tecnologias Utilizadas
 
-- **Dashboard** com estatísticas e visão geral
-- **Gestão de Projetos** com status e progresso
-- **Gestão de Tarefas** organizadas por projeto
-- **Mapas Mentais** para brainstorming e planejamento
-- **Banco de Dados** SQLite para persistência
-- **API REST** para operações CRUD
-- **Modo Offline** com fallback para localStorage
+### Frontend
+- React 18
+- Vite
+- CSS3
+- JavaScript ES6+
 
-## 📋 Pré-requisitos
+### Backend
+- Node.js
+- Express.js
+- SQLite
+- CORS
 
-- Node.js (versão 14 ou superior)
-- npm (incluído com Node.js)
+## 📋 Funcionalidades
 
-## 🛠️ Instalação
+- ✅ **Dashboard**: Visão geral dos projetos e tarefas
+- ✅ **Gestão de Projetos**: Criar, editar e excluir projetos
+- ✅ **Gestão de Tarefas**: Sistema completo de tarefas com status
+- ✅ **Mapas Mentais**: Criação e edição de mapas mentais interativos
+- ✅ **Interface Responsiva**: Funciona em desktop e mobile
+- ✅ **API REST**: Backend robusto com endpoints organizados
 
-### 1. Configurar o Backend
+## 🛠️ Como Executar
 
-Execute o script de instalação:
+### Pré-requisitos
+- Node.js (versão 16 ou superior)
+- npm ou yarn
+
+### Instalação Rápida
+
 ```bash
-install-backend.bat
+# Clone o repositório
+git clone <url-do-repositorio>
+cd app-gestao-projetos
+
+# Instale todas as dependências (frontend + backend)
+npm run install:all
+
+# Execute frontend e backend simultaneamente
+npm run dev
 ```
 
-Este script irá:
-- Verificar se Node.js está instalado
-- Instalar as dependências necessárias
-- Inicializar o banco de dados SQLite
-- Criar dados de exemplo
+### Instalação Manual
 
-### 2. Iniciar o Servidor Backend
-
+1. **Instalar dependências do projeto principal**
 ```bash
-node server.js
+npm install
 ```
 
-O servidor estará disponível em: `http://localhost:3001`
-
-### 3. Iniciar o Frontend
-
-Abra o arquivo `index.html` em um navegador web ou use um servidor HTTP simples:
-
+2. **Instalar dependências do frontend**
 ```bash
-# Usando Python (se disponível)
-python -m http.server 8000
+npm run install:frontend
+```
 
-# Usando Node.js (se http-server estiver instalado)
-npx http-server
+3. **Instalar dependências do backend**
+```bash
+npm run install:backend
+```
 
-# Ou simplesmente abra index.html no navegador
+4. **Executar em desenvolvimento**
+```bash
+# Executar ambos simultaneamente
+npm run dev
+
+# Ou executar separadamente:
+npm run dev:frontend  # Frontend em http://localhost:5173
+npm run dev:backend   # Backend em http://localhost:3001
 ```
 
 ## 🗄️ Estrutura do Banco de Dados
